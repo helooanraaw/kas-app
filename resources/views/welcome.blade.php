@@ -23,13 +23,6 @@
                     </p>
                 </div>
                 
-                <nav>
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
-                            Dashboard
-                        </a>
-                    @endauth
-                </nav>
             </header>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -110,11 +103,9 @@
                 <div>
                     <canvas id="kasProgressChartPublic"></canvas> </div>
             </div>
-            <footer class="mt-8 text-center text-sm text-gray-500">
-                KasApp - Dibuat dengan Laravel & Tailwind CSS
-            </footer>
 
-        </div> </body>
+        </div> 
+    </body>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
