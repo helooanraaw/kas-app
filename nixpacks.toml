@@ -1,0 +1,25 @@
+# nixpacks.toml
+
+[providers]
+php = "8.2"
+
+[php.extensions]
+default = [
+    "ctype",
+    "curl",
+    "dom",
+    "fileinfo",
+    "filter",
+    "hash",
+    "mbstring",
+    "openssl",
+    "pcre",
+    "pdo",
+    "pdo_mysql",
+    "session",
+    "tokenizer",
+    "xml"
+]
+
+[build]
+command = "npm run build"
