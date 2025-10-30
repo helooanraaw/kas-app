@@ -95,7 +95,7 @@ class PengeluaranController extends Controller
             // user_id TIDAK diubah
         ]);
 
-        return redirect()->route('pengeluaran.index')->with('success', 'Pengeluaran berhasil diperbarui!');
+        return redirect()->route('pengeluaran.index')->with('success', 'Pengeluaran berhasil dicatat!');
     }
 
     /**

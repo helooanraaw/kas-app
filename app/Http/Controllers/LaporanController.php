@@ -64,18 +64,20 @@ class LaporanController extends Controller
 
     // Helper untuk mendapatkan list tahun dari data transaksi
     private function getAvailableYears()
-    {
-        // Menggunakan strftime('%Y', column) yang kompatibel dengan SQLite
-        $years = Pembayaran::selectRaw("strftime('%Y', tanggal_bayar) as year")
-                           ->union(Pengeluaran::selectRaw("strftime('%Y', tanggal) as year"))
-                           ->distinct()
-                           ->pluck('year');
-        
-        // Tambahkan tahun saat ini dan pastikan hasilnya unik dan terurut
-        $years->prepend(Carbon::now()->year);
-        
-        return $years->unique()->sortDesc();
-    }
+        {
+            // Menggunakan YEAR(...) yang kompatibel dengan MySQL
+            $pembayaranYears = Pembayaran::selectRaw('YEAR(tanggal_bayar) as year');
+            
+            $pengeluaranYears = Pengeluaran::selectRaw('YEAR(tanggal) as year')
+                                        ->union($pembayaranYears)
+                                        ->distinct()
+                                        ->pluck('year');
+
+            // Tambahkan tahun saat ini dan pastikan hasilnya unik dan terurut
+            $pengeluaranYears->prepend(Carbon::now()->year);
+            
+            return $pengeluaranYears->unique()->sortDesc();
+        }
 
     public function export(Request $request)
     {
