@@ -63,21 +63,34 @@ class LaporanController extends Controller
     }
 
     // Helper untuk mendapatkan list tahun dari data transaksi
-    private function getAvailableYears()
-        {
-            // Menggunakan YEAR(...) yang kompatibel dengan MySQL
-            $pembayaranYears = Pembayaran::selectRaw('YEAR(tanggal_bayar) as year');
-            
-            $pengeluaranYears = Pengeluaran::selectRaw('YEAR(tanggal) as year')
-                                        ->union($pembayaranYears)
-                                        ->distinct()
-                                        ->pluck('year');
+   private function getAvailableYears()
+    {
+        // Dapatkan nama koneksi database default (misal: 'mysql' atau 'sqlite')
+        $connection = config('database.default'); 
+        // Dapatkan driver database (misal: 'mysql' atau 'sqlite')
+        $driver = config("database.connections.{$connection}.driver"); 
 
-            // Tambahkan tahun saat ini dan pastikan hasilnya unik dan terurut
-            $pengeluaranYears->prepend(Carbon::now()->year);
-            
-            return $pengeluaranYears->unique()->sortDesc();
+        if ($driver === 'sqlite') {
+            // Kode untuk SQLite
+            $pembayaranYears = Pembayaran::selectRaw("strftime('%Y', tanggal_bayar) as year");
+            $pengeluaranYearsQuery = Pengeluaran::selectRaw("strftime('%Y', tanggal) as year");
+        } else {
+            // Kode untuk MySQL (dan database lain yang mendukung YEAR())
+            $pembayaranYears = Pembayaran::selectRaw('YEAR(tanggal_bayar) as year');
+            $pengeluaranYearsQuery = Pengeluaran::selectRaw('YEAR(tanggal) as year');
         }
+
+        // Jalankan query gabungan
+        $years = $pengeluaranYearsQuery
+                    ->union($pembayaranYears)
+                    ->distinct()
+                    ->pluck('year');
+
+        // Tambahkan tahun saat ini dan pastikan hasilnya unik dan terurut
+        $years->prepend(Carbon::now()->year);
+        
+        return $years->unique()->sortDesc();
+    }
 
     public function export(Request $request)
     {
