@@ -19,7 +19,7 @@
                         Laporan Uang Kas Kelas
                     </h1>
                     <p class="mt-1 text-sm text-gray-600">
-                        Transparansi dana kelas (Read-Only).
+                        Uang Kas Kelas From XI RPL 1 SMK Negeri 1 Denpasar
                     </p>
                 </div>
                 
@@ -27,10 +27,6 @@
                     @auth
                         <a href="{{ url('/dashboard') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
                             Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                            Login Bendahara
                         </a>
                     @endauth
                 </nav>
@@ -57,12 +53,10 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"> <div class="bg-white p-6 rounded-lg shadow-md">
                     <h3 class="text-lg font-medium mb-4">10 Pemasukan Terakhir</h3>
                     <div class="overflow-x-auto h-96 overflow-y-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full w-full table-auto divide-y divide-gray-200">
                             <thead class="bg-gray-50 sticky top-0">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Siswa</th>
@@ -74,7 +68,6 @@
                                 @forelse ($listPemasukan as $pemasukan)
                                     <tr>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{{ $pemasukan->siswa->nama_lengkap ?? 'Siswa Dihapus' }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($pemasukan->tanggal_bayar)->isoFormat('DD MMM YYYY') }}</td>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ date('d M Y', strtotime($pemasukan->tanggal_bayar)) }}</td>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-green-600 text-right">+ Rp {{ number_format($pemasukan->jumlah, 0, ',', '.') }}</td>
                                     </tr>
@@ -89,7 +82,7 @@
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <h3 class="text-lg font-medium mb-4">10 Pengeluaran Terakhir</h3>
                     <div class="overflow-x-auto h-96 overflow-y-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full w-full table-auto divide-y divide-gray-200">
                             <thead class="bg-gray-50 sticky top-0">
                                 <tr>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
@@ -101,7 +94,6 @@
                                 @forelse ($listPengeluaran as $pengeluaran)
                                     <tr>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-800">{{ $pengeluaran->keterangan }}</td>
-                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($pengeluaran->tanggal)->isoFormat('DD MMM YYYY') }}</td>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ date('d M Y', strtotime($pengeluaran->tanggal)) }}</td>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-red-600 text-right">- Rp {{ number_format($pengeluaran->jumlah, 0, ',', '.') }}</td>
                                     </tr>
@@ -113,12 +105,26 @@
                     </div>
                 </div>
 
+            </div> <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-medium mb-4">Progres Kas (30 Hari Terakhir)</h3>
+                <div>
+                    <canvas id="kasProgressChartPublic"></canvas> </div>
             </div>
-            
             <footer class="mt-8 text-center text-sm text-gray-500">
                 KasApp - Dibuat dengan Laravel & Tailwind CSS
             </footer>
 
-        </div>
-    </body>
+        </div> </body>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const labels = @json($chartLabels);
+            const pemasukanData = @json($chartPemasukan);
+            const pengeluaranData = @json($chartPengeluaran);
+
+            const data = { labels: labels, datasets: [ { label: 'Pemasukan', backgroundColor: 'rgba(75, 192, 192, 0.2)', borderColor: 'rgb(75, 192, 192)', data: pemasukanData, fill: true, tension: 0.3 }, { label: 'Pengeluaran', backgroundColor: 'rgba(255, 99, 132, 0.2)', borderColor: 'rgb(255, 99, 132)', data: pengeluaranData, fill: true, tension: 0.3 } ] };
+            const config = { type: 'line', data: data, options: { responsive: true, scales: { y: { beginAtZero: true } } } };
+            const myChart = new Chart( document.getElementById('kasProgressChartPublic'), config );
+        });
+    </script>
 </html>
